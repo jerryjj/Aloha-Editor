@@ -12,3 +12,4 @@ deps/extjs/pkg-tabs-debug.js
 deps/extjs/pkg-tips-debug.js
 deps/extjs/pkg-toolbars-debug.js
 deps/extjs/pkg-menu-debug.js
+deps/extjs/pkg-forms-debug.js

@@ -24,6 +24,7 @@ eu.iksproject.PersonPlugin.init = function() {
 	var that = this;
 	
 	this.initButtons();
+	this.initPanel();
 };
 
 /**
@@ -68,4 +69,45 @@ eu.iksproject.PersonPlugin.initButtons = function() {
 		this.i18n('tab.annotations'),
 		1
 	);	
+};
+
+eu.iksproject.PersonPlugin.initPanel = function () {
+	var that = this;
+
+	this.panel = new Ext.Window({
+		items : new Ext.FormPanel({
+			labelWidth: 75,
+	        frame:true,
+	        title: 'Simple Form',
+	        bodyStyle:'padding:5px 5px 0',
+	        width: 350,
+	        defaults: {width: 230},
+	        defaultType: 'textfield',
+	        items: [{
+                fieldLabel: 'Name',
+                name: 'name',
+            },{
+                fieldLabel: 'Nickname',
+                name: 'nickname'
+            },{
+                fieldLabel: 'URL',
+                name: 'url'
+            }
+        ]
+		}),
+		buttons: [{
+            text:'Submit',
+            handler : function () {
+				
+			}
+        },{
+            text: 'Close',
+            handler: function(){
+                that.panel.hide();
+            }
+        }]
+	});
+
+    this.panel.render(document.body);
+    this.panel.show();
 };

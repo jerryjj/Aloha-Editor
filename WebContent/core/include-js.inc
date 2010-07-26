@@ -16,6 +16,7 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/e
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-tips-debug.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-toolbars-debug.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-menu-debug.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-forms-debug.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/jquery.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/lang.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/range.js"></script>');

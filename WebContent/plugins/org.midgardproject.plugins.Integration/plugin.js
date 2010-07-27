@@ -1,12 +1,11 @@
 /*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
+* Aloha Editor Midgard integration
+* Author & Copyright (c) 2010 The Midgard Project
+* dev@lists.midgard-project.org
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 /**
- * this is an example plugin to demonstrate how to access the aloha edited content and save it to a storage (cms, database, ...) of your choice
- * @author laurin 
+ * @author bergie
  */
 if (typeof org == 'undefined') {
     var org = {};
@@ -23,6 +22,9 @@ org.midgardproject.IntegrationPlugin = new GENTICS.Aloha.Plugin('org.midgardproj
  */
 org.midgardproject.IntegrationPlugin.languages = ['en'];
 
+/**
+ * Holder for Midgard objects (array indexed by GUID) that have been made editable on the page
+ */
 org.midgardproject.IntegrationPlugin.objects = {};
 
 /**
@@ -78,8 +80,8 @@ org.midgardproject.IntegrationPlugin.init = function () {
  * collect data and save 
  */
 org.midgardproject.IntegrationPlugin.save = function () {
-    var content = "";
-    // iterate all dom elements which have been made aloha editable
+
+    // iterate all Midgard objects which have been made Aloha editable
     jQuery.each(org.midgardproject.IntegrationPlugin.objects, function(index, midgardObject) {
         var guid = index;
         var type = midgardObject.type;
@@ -88,10 +90,8 @@ org.midgardproject.IntegrationPlugin.save = function () {
             propertyContents[index] = alohaInstance.getContents();
         });
 
+        // Send the edited fields to the form handler backend
         var url = '/mgd:admin/object/update/' + type + '/' + guid + '/json';
         jQuery.ajax({url: url, dataType: 'json', data: propertyContents, type: 'POST'});
     });
-    // this fakes the saving of the content to your backend.
-    // TODO implement this to save the edited aloha content into your backend
-    alert(this.i18n('saveMessage')+"\n\n"+content);
 } ;

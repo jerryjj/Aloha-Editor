@@ -77,6 +77,30 @@ eu.iksproject.Utils.RDFa.prototype.getHandlerForClass = function(namespace, clas
     return GENTICS.Aloha.PluginRegistry.getInstance(this.namespaceHandlers[namespace][className]);
 };
 
+eu.iksproject.Utils.RDFa.prototype.readElementFrom = function(html) {
+    html = jQuery(html);
+    var data = html.data();
+    
+    var properties = jQuery("[property*='']", html);
+    
+    var el = new eu.iksproject.Utils.RDFa.Element(data.ns, data.classname, data.opts);    
+    
+    var pdata = null;
+    var value = null;
+    properties.each(function() {
+        pdata = jQuery(this).data();
+        if (pdata.opts.visible) {
+            value = jQuery(this).text();
+        } else {
+            value = jQuery(this).attr('content');
+        }
+        
+        el.addProperty(pdata.name, pdata.opts, value);
+    });
+    
+    return el;
+};
+
 /**
  * Element representing RDFa object
  *
@@ -87,17 +111,28 @@ eu.iksproject.Utils.RDFa.prototype.getHandlerForClass = function(namespace, clas
  */
 eu.iksproject.Utils.RDFa.prototype.Element = function (namespace, className, opts) {
     this.options = jQuery.extend({}, {
-        'shortHandle': namespace + '_NS',
+        'shortHandle': className + '_NS',
         'elementName': 'span'
     }, opts || {});
     this.properties = {};
+    
+    this.elementCreated = false;
     
     this.namespace = namespace;
     this.classname = className;
     this.nsPrefix = 'xmlns:' + this.options.shortHandle;
     this.shortHandlePrefix = this.options.shortHandle + ':';
     
+    this.readElement();
     this.createElement(true);
+};
+
+eu.iksproject.Utils.RDFa.prototype.Element.prototype.readElement = function() {
+    var existing = jQuery(this.options.elementName + '[typeof="' + this.shortHandlePrefix + this.classname + '"]');
+    if (existing.length) {
+        this.element = existing;
+        this.elementCreated = true;
+    }
 };
 
 eu.iksproject.Utils.RDFa.prototype.Element.prototype.createElement = function(withoutChildren) {
@@ -105,13 +140,23 @@ eu.iksproject.Utils.RDFa.prototype.Element.prototype.createElement = function(wi
         withoutChildren = false;
     }
     
-    this.element = jQuery('<' + this.options.elementName + '/>');
+    if (! this.elementCreated) {
+        this.element = jQuery('<' + this.options.elementName + '/>');
+
+        this.attrs = {};
+        this.attrs[this.nsPrefix] = this.namespace;
+        this.attrs['typeof'] = this.shortHandlePrefix + this.classname;
+
+        this.element.attr(this.attrs);
+    }
     
-    this.attrs = {};
-    this.attrs[this.nsPrefix] = this.namespace;
-    this.attrs['typeof'] = this.shortHandlePrefix + this.classname;
+    this.element.data({
+        ns: this.namespace,
+        classname: this.classname,
+        opts: this.options
+    });
     
-    this.element.attr(this.attrs);
+    this.elementCreated = true;
     
     if (! withoutChildren) {
         var self = this;
@@ -134,22 +179,17 @@ eu.iksproject.Utils.RDFa.prototype.Element.prototype.getElement = function(witho
         return rootElement;
     }
     
-    var self = this;
-    jQuery.each(this.properties, function(name, property) {
-        self.properties[name].element.appendTo(rootElement);
-    });
-    
     return rootElement;
 };
 
-eu.iksproject.Utils.RDFa.prototype.Element.prototype.addProperty = function(propertyName, value, opts) {
+eu.iksproject.Utils.RDFa.prototype.Element.prototype.addProperty = function(propertyName, opts, value) {
     if (typeof this.properties[propertyName] != "undefined") {
         this.properties[propertyName].update(value, opts);
         
         return;
     }
     
-    this.properties[propertyName] = new eu.iksproject.Utils.RDFa.ElementProperty(this, propertyName, value, opts);
+    this.properties[propertyName] = new eu.iksproject.Utils.RDFa.ElementProperty(this, propertyName, opts, value);
 };
 
 eu.iksproject.Utils.RDFa.prototype.Element.prototype.getProperty = function(propertyName) {
@@ -169,10 +209,10 @@ eu.iksproject.Utils.RDFa.prototype.Element.prototype.getProperty = function(prop
  * @param {Mixed} value Value of the property
  * @param {Object} opts Overriding options
  */
-eu.iksproject.Utils.RDFa.prototype.ElementProperty = function(parentElement, propertyName, value, opts) {
+eu.iksproject.Utils.RDFa.prototype.ElementProperty = function(parentElement, propertyName, opts, value) {
     this.options = jQuery.extend({}, {
         'elementName': 'span',
-        'visible': true,
+        'visible': false,
         'namespace': null,
     }, opts || {});
     
@@ -180,11 +220,22 @@ eu.iksproject.Utils.RDFa.prototype.ElementProperty = function(parentElement, pro
         this.options.shortHandle = this.options.namespace + '_NS';
     }
     
+    this.elementCreated = false;
+    
     this.parent = parentElement;
     this.name = propertyName;
     this.value = value;
     
+    this.readElement();
     this.createElement();
+};
+
+eu.iksproject.Utils.RDFa.prototype.ElementProperty.prototype.readElement = function() {
+    var existing = jQuery(this.options.elementName + '[property="'+this.parent.shortHandlePrefix + this.name+'"]', this.parent.element);
+    if (existing.length) {
+        this.element = existing;
+        this.elementCreated = true;
+    }
 };
 
 eu.iksproject.Utils.RDFa.prototype.ElementProperty.prototype.update = function(value, opts) {
@@ -195,35 +246,47 @@ eu.iksproject.Utils.RDFa.prototype.ElementProperty.prototype.update = function(v
 };
 
 eu.iksproject.Utils.RDFa.prototype.ElementProperty.prototype.createElement = function() {
-    this.element = jQuery('<' + this.options.elementName + '/>');
-    
-    this.attrs = {};
-    
-    var shorthandlePrefix = this.parent.shortHandlePrefix;
-    
-    if (this.options.namespace != null) {
-        if (typeof this.options.shortHandle != "undefined") {
-            shortHandlePrefix = this.options.shortHandle;
-        }
+    if (! this.elementCreated) {
+        this.element = jQuery('<' + this.options.elementName + '/>');
         
-        this.attrs['xmlns:' + shortHandlePrefix] = this.options.namespace;
+        this.attrs = {};
+
+        var shorthandlePrefix = this.parent.shortHandlePrefix;
+
+        if (this.options.namespace != null) {
+            if (typeof this.options.shortHandle != "undefined") {
+                shortHandlePrefix = this.options.shortHandle;
+            }
+
+            this.attrs['xmlns:' + shortHandlePrefix] = this.options.namespace;
+        }
+
+        this.attrs['property'] = shorthandlePrefix + this.name;
+        this.attrs['content'] = '';
+        
+        this.element.attr(this.attrs);
+        
+        this.element.appendTo(this.parent.element);
+        
+        this.elementCreated = true;
     }
     
-    this.attrs['property'] = shorthandlePrefix + this.name;
+    this.element.attr('content', '');
+    this.element.html('');
     
-    if (!this.options.visible || typeof this.value == "undefined") {
-        this.attrs['content'] = this.value;
-        
-        if (typeof this.value == "undefined") {
-            this.attrs['content'] = '';
-        }
-    } else {
-        if (typeof this.value != "undefined") {
+    if (this.value) {
+        if (! this.options.visible) {
+            this.element.attr('content', this.value);
+        } else {
+            this.element.removeAttr('content');
             this.element.html(this.value);
         }
     }
     
-    this.element.attr(this.attrs);
+    this.element.data({
+        name: this.name,
+        opts: this.options
+    });
 };
 
 eu.iksproject.Utils.RDFa.prototype.ElementProperty.prototype.getElement = function() {

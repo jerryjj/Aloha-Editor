@@ -60,9 +60,6 @@ eu.iksproject.PersonPlugin.initButtons = function() {
     var that = this;
     
     var personRDFaElement = new eu.iksproject.Utils.RDFa.Element('http://rdf.data-vocabulary.org/#', 'Person');
-    jQuery.each(eu.iksproject.PersonPlugin.usedProperties, function(name, data) {
-        personRDFaElement.addProperty(name, data.elementOptions);
-    });
     
 	// the 'create person' button
 	this.createPersonButton = new GENTICS.Aloha.ui.Button({
@@ -76,6 +73,11 @@ eu.iksproject.PersonPlugin.initButtons = function() {
 			}
 			
 			var rangeObject = GENTICS.Aloha.Selection.rangeObject;
+            
+            var personRDFaElement = new eu.iksproject.Utils.RDFa.Element('http://rdf.data-vocabulary.org/#', 'Person');
+            jQuery.each(eu.iksproject.PersonPlugin.usedProperties, function(name, data) {
+                personRDFaElement.addProperty(name, data.elementOptions);
+            });
             
 			// add the markup
 			GENTICS.Utils.Dom.addMarkup(rangeObject, personRDFaElement.getElement());
@@ -104,7 +106,7 @@ eu.iksproject.PersonPlugin.initButtons = function() {
 			    continue;
 		    }
 		    
-			if (GENTICS.Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, that.createPersonButton.markupWrapper)) {			    
+			if (GENTICS.Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, that.createPersonButton.markupWrapper)) {
                 that.showPanel(effectiveMarkup);
                 var panelActive = true;
 		    }
@@ -165,6 +167,8 @@ eu.iksproject.PersonPlugin.initPanel = function () {
     
     this.panel = new Ext.Window({
         resizable: false,
+        closable:false,
+        x: 10,
         items : this.propertyFormPanel
     });
 

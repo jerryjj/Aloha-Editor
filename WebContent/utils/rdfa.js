@@ -27,6 +27,11 @@ if (typeof eu.iksproject.Utils.RDFa == 'undefined' || !eu.iksproject.Utils.RDFa)
 
 eu.iksproject.Utils.RDFa.prototype.namespaceHandlers = {};
 
+eu.iksproject.Utils.RDFa.prototype.generateRandomNamespacePrefix = function(className) {
+    var seed = Math.floor(Math.random()*1000) + Math.floor(new Date().getTime() / 1000);
+    return seed + '_' + className;
+};
+
 /**
  * Plugins should register all RFDa namespaces and its classes that they support.
  *
@@ -111,10 +116,14 @@ eu.iksproject.Utils.RDFa.prototype.readElementFrom = function(html) {
  */
 eu.iksproject.Utils.RDFa.prototype.Element = function (namespace, className, opts) {
     this.options = jQuery.extend({}, {
-        'shortHandle': className + '_NS',
+        'shortHandle': null,
         'elementName': 'span'
     }, opts || {});
     this.properties = {};
+    
+    if (this.options.shortHandle == null) {
+        this.options.shortHandle = eu.iksproject.Utils.RDFa.generateRandomNamespacePrefix(className);
+    }
     
     this.elementCreated = false;
     
@@ -124,11 +133,11 @@ eu.iksproject.Utils.RDFa.prototype.Element = function (namespace, className, opt
     this.shortHandlePrefix = this.options.shortHandle + ':';
     
     this.readElement();
-    this.createElement(true);
+    //this.createElement(true);
 };
 
 eu.iksproject.Utils.RDFa.prototype.Element.prototype.readElement = function() {
-    var existing = jQuery(this.options.elementName + '[typeof="' + this.shortHandlePrefix + this.classname + '"]');
+    var existing = jQuery(this.options.elementName + '[typeof="' + this.shortHandlePrefix + this.classname + '"]');    
     if (existing.length) {
         this.element = existing;
         this.elementCreated = true;
@@ -227,7 +236,7 @@ eu.iksproject.Utils.RDFa.prototype.ElementProperty = function(parentElement, pro
     this.value = value;
     
     this.readElement();
-    this.createElement();
+    //this.createElement();
 };
 
 eu.iksproject.Utils.RDFa.prototype.ElementProperty.prototype.readElement = function() {
@@ -290,11 +299,19 @@ eu.iksproject.Utils.RDFa.prototype.ElementProperty.prototype.createElement = fun
 };
 
 eu.iksproject.Utils.RDFa.prototype.ElementProperty.prototype.getElement = function() {
+    if (! this.elementCreated) {
+        this.createElement();
+    }
+    
     return this.element;
 };
 
 eu.iksproject.Utils.RDFa.prototype.ElementProperty.prototype.getElementTree = function() {
-    var tree = this.parent.getElement();
+    if (! this.elementCreated) {
+        this.createElement();
+    }
+    
+    var tree = this.parent.getElement(false);
     
     this.element.appendTo(tree);
     

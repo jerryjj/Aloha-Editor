@@ -35,6 +35,7 @@ eu.iksproject.Utils.RDFa.prototype.generateRandomNamespacePrefix = function(clas
 /**
  * Plugins should register all RFDa namespaces and its classes that they support.
  *
+ * @namespace eu.iksproject.Utils
  * @param {String} pluginName Name of the plugin
  * @param {String} namespace Namespace which the plugin can handle
  * @param {Array} classes List of classes from the namespace which the plugin can handle
@@ -109,7 +110,8 @@ eu.iksproject.Utils.RDFa.prototype.readElementFrom = function(html) {
 /**
  * Element representing RDFa object
  *
- * @class
+ * @class Element
+ * @namespace eu.iksproject.Utils.RDFa
  * @param {String} namespace Namespace
  * @param {String} className Name of the class
  * @param {Object} opts Overriding options
@@ -212,7 +214,8 @@ eu.iksproject.Utils.RDFa.prototype.Element.prototype.getProperty = function(prop
 /**
  * ElementProperty representing RDFa object property
  *
- * @class
+ * @class ElementProperty
+ * @namespace eu.iksproject.Utils.RDFa
  * @param {eu.iksproject.Utils.RDFa.Element} parentElement Element that this property belongs to
  * @param {String} propertyName Name of the property
  * @param {Mixed} value Value of the property

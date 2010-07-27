@@ -62,5 +62,6 @@
         <source src="../../WebContent/core/selection.js" />
         <source src="../../WebContent/utils/range.js" />
         <source src="../../WebContent/utils/dom.js" />
+        <source src="../../WebContent/utils/rdfa.js" />
     </sources>
 </doc>

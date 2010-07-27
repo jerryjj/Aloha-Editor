@@ -1,0 +1,12 @@
+floatingmenu.tab.table=Táblázat
+deleterows.confirm=Tényleg törölni akarja a kiválasztott sorokat?
+deletecolumns.confirm=Tényleg törölni akarja a kiválasztott oszlopokat?
+deletetable.confirm=Tényleg törölni akarja a táblázatot?
+Table=Táblázat
+button.createtable.tooltip=Táblázat beszúrása
+button.addcolleft.tooltip=Oszlop beszúrása balra
+button.addcolright.tooltip=Oszlop beszúrása jobbra
+button.delcols.tooltip=Oszlopok törlése
+button.addrowbefore.tooltip=Sor(ok) beszúrása ez előtt
+button.addrowafter.tooltip=Sor(ok) beszúrása ez után
+button.delrows.tooltip=Sor(ok) törlése

@@ -1,2 +1,6 @@
 tab.annotations=Annotations
 button.person.tooltip=Person
+property.name=Name
+property.nickname=Nickname
+property.url=Url
+form.visibility=Visible?

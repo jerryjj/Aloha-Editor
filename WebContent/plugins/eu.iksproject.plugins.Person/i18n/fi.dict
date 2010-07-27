@@ -1,2 +1,6 @@
 tab.annotations=Merkinnät
 button.person.tooltip=Henkilö
+property.name=Nimi
+property.nickname=Lempinimi
+property.url=Url
+form.visibility=Näkyvissä?

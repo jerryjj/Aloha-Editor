@@ -46,6 +46,10 @@ eu.iksproject.PersonPlugin.init = function() {
 	
 	this.initButtons();
 	this.initPanel();
+	
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableDeactivated', function(event, editable) {
+	    that.hidePanel();
+    });
 };
 
 /**
